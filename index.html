@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+  <head>
+    <!--required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Ocean City Tides</title>
+
+  </head>
+  <body>
+    <canvas id="myChart"></canvas>
+    
+  </body>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.3.2/chart.js"></script>
+  <script>
+      // generate all of the data from equation
+      var heights = new Array(1440);
+      var times = new Array(1440);
+      for(var i = 0; i < 1440; i++) {
+        heights[i] = -0.4101068949309464* Math.sin(0.009086365587799633 * i + 0.7616028427422098) + 3.7197689301206793;
+        times[i] = Math.floor(i/60) + ":" + i % 60;
+      }
+      
+      let myChart = document.getElementById('myChart').getContext('2d');
+
+      let tidesChart = new Chart(myChart, {
+        type:'line',
+        data:{
+          labels: times,
+          datasets: [{
+              label: "depth",
+              data: heights
+          }]
+        },
+        options:{}
+
+      });
+  </script>
+
+</html>
+
