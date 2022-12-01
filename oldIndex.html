@@ -20,6 +20,7 @@
       var times = new Array(1440);
       
       var a = 0, b = 0, c = 0, h = 0;
+      /*
       const userAction = async () => {
         const response = await fetch('http://tidesapi.andrewtrackim.com:8344/wave', {
           method: 'GET',
@@ -29,8 +30,10 @@
         });
         const params = await response.json(); //extract JSON from the http response
         a = params.a, b = params.b, c = params.c, h = params.h;
-        await plot(a,b,c,h);
-      }
+        */
+        a = -0.4101068949309464, b = 0.009086365587799633, c = 0.7616028427422098, h = 3.7197689301206793;
+      plot(a,b,c,h);
+      //}
 
     userAction();
 
@@ -41,7 +44,7 @@
         heights[i] = a* Math.sin(b * i + c) + h;
         times[i] = Math.floor(i/60) + ":" + i % 60;
       }
-      
+
       let myChart = document.getElementById('myChart').getContext('2d');
 
       let tidesChart = new Chart(myChart, {
