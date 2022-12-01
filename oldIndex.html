@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+  <head>
+    <!--required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Ocean City Tides</title>
+
+  </head>
+  <body>
+    <canvas id="myChart"></canvas>
+    
+  </body>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.3.2/chart.js"></script>
+  <script>
+      // generate all of the data from equation
+      var heights = new Array(1440);
+      var times = new Array(1440);
+      
+      var a = 0, b = 0, c = 0, h = 0;
+      const userAction = async () => {
+        const response = await fetch('http://tidesapi.andrewtrackim.com:8344/wave', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        const params = await response.json(); //extract JSON from the http response
+        a = params.a, b = params.b, c = params.c, h = params.h;
+        await plot(a,b,c,h);
+      }
+
+    userAction();
+
+    // this function handles plotting the tides in a chart
+    // it is called after fetching the sin wave data from the API
+    function plot(a, b, c, h) {
+      for(var i = 0; i < 1440; i++) {
+        heights[i] = a* Math.sin(b * i + c) + h;
+        times[i] = Math.floor(i/60) + ":" + i % 60;
+      }
+      
+      let myChart = document.getElementById('myChart').getContext('2d');
+
+      let tidesChart = new Chart(myChart, {
+        type:'line',
+        data:{
+          labels: times,
+          datasets: [{
+              label: "depth",
+              data: heights
+          }]
+        },
+        options:{}
+
+      });
+    }
+  </script>
+
+</html>
