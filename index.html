@@ -148,49 +148,80 @@
     <script>
 
         // get data from api
+        var heights = [];
+        var timestamps = [];
+        var a, b, c, h;
+
+        // get time from 12 hours ago in seconds (14400 seconds to adjust from gmt to est, 43200 seconds to adjust for 12 hours)
+        var now = parseInt(Date.now() / 1000) - 14400 - 43200;
+
+
+        // fetch points form past 12 hours
+        fetch('https://octidesapi.andrewtrackim.com/get-depth-since/' + now)
+            .then(response => response.json())
+            .then(data => {
+                for (var i = 0; i < data.length; i++) {
+                    heights.push(data[i][0]);
+                    timestamps.push(data[i][2]);
+                }
+                refreshGraph();
+            });
         
-        
-       
-        // generate data to graph
-        a = -0.4101068949309464, b = 0.009086365587799633, c = 0.7616028427422098, h = 3.7197689301206793 + 0.39;
-        for(var i = 758; i < 1440; i++) {
-            heights.push(a* Math.sin(b * i + c) + h);
-            timestamps.push('2022.12.19 ' + (Math.floor(i/60) + ":" + i % 60) + ':00');
-        }
+        // fetch eqution for sine wave
+        fetch('https://octidesapi.andrewtrackim.com/prediction')
+            .then(response => response.json())
+            .then(data => {
+                a = data[0];
+                b = data[1];
+                c = data[2];
+                h = data[3];
+                refreshGraph();
+            });
 
-        var times = new Array(timestamps.length);
-        for (var i = 0; i < times.length; i ++) {
-            times[i] = new Date(timestamps[i]);
-        }
+        function refreshGraph() {
+            if (heights.length > 0 && a != undefined) {
 
-        // chart of tide past recording
-        let past = document.getElementById('past').getContext('2d');
-            let pastChart = new Chart(past, {
-                type:'line',
-                data:{
-                labels: times,
-                datasets: [{
-                    label: "depth",
-                    data: heights
-                }]
-                
-                },
+                // generate sine wave starting at minute after most recent data point
+                startTime = timestamps[timestamps.length - 1] + (60 - timestamps[timestamps.length - 1] % 60);
+                for (var i = 0; i < 720; i++) {
+                    heights.push(a* Math.sin(b * (startTime + i * 60) + c) + h);
+                    timestamps.push(startTime + i * 60);
+                }
 
-                options:{
-                    fill: true,
-                    backgroundColor: '#025bba',
-                    borderColor: '#025bba',
-                    scales: {
-                        x: {
-                            type: 'time',
-                            time: {
-                                unit: 'minute'
+                // convert timestamps to date objects to display on graph
+                var times = new Array(timestamps.length);
+                for (var i = 0; i < times.length; i ++) {
+                    times[i] = new Date(timestamps[i]);
+                }
+
+                let past = document.getElementById('past').getContext('2d');
+                let pastChart = new Chart(past, {
+                    type:'line',
+                    data:{
+                        labels: times,
+                        datasets: [{
+                            label: "depth",
+                            data: heights
+                        }]
+                    },
+
+                    options:{
+                        fill: true,
+                        backgroundColor: '#025bba',
+                        borderColor: '#025bba',
+                        scales: {
+                            x: {
+                                type: 'time',
+                                time: {
+                                    unit: 'minute'
+                                }
                             }
                         }
                     }
-                }
-
-            });
+                });
+            }
+        }
+         
     </script>
 </body>
 
