@@ -151,6 +151,7 @@
         var heights = [];
         var timestamps = [];
         var a, b, c, h;
+        var show_prediction = false;
 
         // get time from 12 hours ago in seconds (14400 seconds to adjust from gmt to est, 43200 seconds to adjust for 12 hours)
         var now = parseInt(Date.now() / 1000) - 14400 - 43200;
@@ -182,13 +183,16 @@
             if (heights.length > 0 && a != undefined) {
 
                 // generate sine wave starting at minute after most recent data point
-                startTime = timestamps[timestamps.length - 1] + (60 - timestamps[timestamps.length - 1] % 60);
-                for (var i = 0; i < 720; i++) {
-                    currTime = parseInt(startTime + i * 60);
-                    newValue = a* Math.sin(b * currTime + c) + h;
-                    heights.push(newValue);
-                    timestamps.push(startTime + i * 60);
+                if (show_prediction) {
+                    startTime = timestamps[timestamps.length - 1] + (60 - timestamps[timestamps.length - 1] % 60);
+                    for (var i = 0; i < 720; i++) {
+                        currTime = parseInt(startTime + i * 60);
+                        newValue = a* Math.sin(b * currTime + c) + h;
+                        heights.push(newValue);
+                        timestamps.push(startTime + i * 60);
+                    }
                 }
+                
 
                 var data = heights.map(function(height, i) {
                     return {x: height, y: timestamps[i]};
