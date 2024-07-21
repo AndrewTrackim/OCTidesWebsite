@@ -161,8 +161,8 @@
             .then(response => response.json())
             .then(data => {
                 for (var i = 0; i < data.length; i++) {
-                    heights.push(data[i][0]);
-                    timestamps.push(data[i][2]);
+                    heights.push(data[i][2]);
+                    timestamps.push(data[i][0]);
                 }
                 refreshGraph();
             });
@@ -171,10 +171,10 @@
         fetch('https://octidesapi.andrewtrackim.com/prediction')
             .then(response => response.json())
             .then(data => {
-                a = data[0];
-                b = data[1];
-                c = data[2];
-                h = data[3];
+                a = data['a'];
+                b = data['b'];
+                c = data['c'];
+                h = data['h'];
                 refreshGraph();
             });
 
@@ -184,15 +184,22 @@
                 // generate sine wave starting at minute after most recent data point
                 startTime = timestamps[timestamps.length - 1] + (60 - timestamps[timestamps.length - 1] % 60);
                 for (var i = 0; i < 720; i++) {
-                    heights.push(a* Math.sin(b * (startTime + i * 60) + c) + h);
+                    currTime = parseInt(startTime + i * 60);
+                    newValue = a* Math.sin(b * currTime + c) + h;
+                    heights.push(newValue);
                     timestamps.push(startTime + i * 60);
                 }
 
+                var data = heights.map(function(height, i) {
+                    return {x: height, y: timestamps[i]};
+                });
                 // convert timestamps to date objects to display on graph
                 var times = new Array(timestamps.length);
                 for (var i = 0; i < times.length; i ++) {
-                    times[i] = new Date(timestamps[i]);
+                    times[i] = new Date(timestamps[i] * 1000);
                 }
+
+                console.log(Math.max(heights));
 
                 let past = document.getElementById('past').getContext('2d');
                 let pastChart = new Chart(past, {
