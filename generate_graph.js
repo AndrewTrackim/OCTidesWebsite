@@ -13,9 +13,10 @@ let pastChart;
 fetch('https://octidesapi.andrewtrackim.com/get-depth-since/' + now)
     .then(response => response.json())
     .then(data => {
-        for (var i = 0; i < data.length; i++) {
-            heights.push(data[i]['depth']);
-            timestamps.push(data[i]['unixTime']);
+        points = data['tidePoints'];
+        for (var i = 0; i < points.length; i++) {
+            heights.push(points[i]['depth']);
+            timestamps.push(points[i]['unixTime']);
         }
         refreshGraph();
     });
