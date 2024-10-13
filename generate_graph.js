@@ -28,6 +28,7 @@ fetch('https://octidesapi.andrewtrackim.com/prediction')
         b = data['b'];
         c = data['c'];
         h = data['h'];
+        offset = data['offset'];
         refreshGraph();
     });
 
@@ -45,7 +46,7 @@ function refreshGraph() {
         if (a != undefined && checkbox.checked) {
             startTime = timestamps[timestamps.length - 1] + (60 - timestamps[timestamps.length - 1] % 60);
             for (var i = 0; i < 720; i++) {
-                currTime = parseInt(startTime + i * 60);
+                currTime = parseInt(startTime + i * 60 - offset);
                 newValue = a* Math.sin(b * currTime + c) + h;
                 predictedHeights.push(newValue);
                 predictedTimestamps.push(startTime + i * 60);
