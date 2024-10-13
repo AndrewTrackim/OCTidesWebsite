@@ -14,8 +14,8 @@ fetch('https://octidesapi.andrewtrackim.com/get-depth-since/' + now)
     .then(response => response.json())
     .then(data => {
         for (var i = 0; i < data.length; i++) {
-            heights.push(data[i][2]);
-            timestamps.push(data[i][0]);
+            heights.push(data[i]['depth']);
+            timestamps.push(data[i]['unixTime']);
         }
         refreshGraph();
     });
