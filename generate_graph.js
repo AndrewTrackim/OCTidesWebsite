@@ -202,6 +202,12 @@ function refreshGraph() {
             times[i] = new Date(allTimestamps[i] * 1000);
         }
 
+        // color future predicted points differently from historical data points
+        let pointBackgroundColors = new Array(times.length);
+        for (var i = 0; i < times.length; i++) {
+            pointBackgroundColors[i] = i < timestamps.length ? '#025bba' : '#7fa9e8';
+        }
+
         // prepare event markers dataset
         let eventData = [];
         let eventColors = [];
@@ -231,7 +237,10 @@ function refreshGraph() {
                         borderColor: '#025bba',
                         borderWidth: 2,
                         fill: true,
-                        pointRadius: 0,
+                        pointRadius: 2,
+                        pointHoverRadius: 4,
+                        pointBackgroundColor: pointBackgroundColors,
+                        pointBorderWidth: 0,
                         order: 1
                     },
                     {
