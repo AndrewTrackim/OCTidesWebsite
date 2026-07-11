@@ -79,6 +79,44 @@
     #eventsTable th:nth-child(2), #eventsTable td:nth-child(2) { width: 18%; }
     #eventsTable th:nth-child(3), #eventsTable td:nth-child(3) { width: 18%; }
     #eventsTable th:nth-child(4), #eventsTable td:nth-child(4) { width: 26%; }
+
+    .controls-row,
+    .events-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        justify-content: center;
+    }
+    .controls-row .control-item,
+    .events-controls .control-item {
+        display: flex;
+        flex-direction: column;
+        min-width: 160px;
+        flex: 1 1 180px;
+    }
+    .controls-row .control-item label,
+    .events-controls .control-item label {
+        margin-bottom: 4px;
+    }
+    .controls-row input,
+    .controls-row select,
+    .events-controls input,
+    .events-controls button {
+        width: 100%;
+        max-width: 100%;
+    }
+    @media (max-width: 768px) {
+        .controls-row .control-item,
+        .events-controls .control-item {
+            min-width: 100%;
+            flex: 1 1 100%;
+        }
+        .controls-row,
+        .events-controls {
+            gap: 10px;
+        }
+    }
         
     </style>
 </head>
@@ -88,36 +126,54 @@
     </section>
     <div class="container">
         <div class="row mt-5">
-                <div class="mb-3 d-flex align-items-center" style="gap:12px;">
-                    <label for="startPicker" class="form-label mb-0">Start:</label>
-                    <input type="datetime-local" id="startPicker" class="form-control" style="max-width:260px;" />
-                    <label for="endPicker" class="form-label mb-0">End:</label>
-                    <input type="datetime-local" id="endPicker" class="form-control" style="max-width:260px;" />
-                    <button id="applyRangeButton" class="btn btn-primary">Apply</button>
-                    <div class="form-check form-switch ms-3">
-                        <input class="form-check-input" type="checkbox" id="futureSwitch">
-                        <label class="form-check-label" for="futureSwitch">Show future tides</label>
+                <div class="mb-3 controls-row">
+                    <div class="control-item">
+                        <label for="startPicker" class="form-label">Start:</label>
+                        <input type="datetime-local" id="startPicker" class="form-control" />
                     </div>
-                    <label class="mb-0 ms-3">Prediction:</label>
-                    <select id="predictionMode" class="form-select" style="max-width:200px;">
-                        <option value="simple">Simple (scipy)</option>
-                        <option value="utide">Advanced (UTide)</option>
-                    </select>
+                    <div class="control-item">
+                        <label for="endPicker" class="form-label">End:</label>
+                        <input type="datetime-local" id="endPicker" class="form-control" />
+                    </div>
+                    <div class="control-item" style="flex: 0 0 auto; align-self: flex-end;">
+                        <button id="applyRangeButton" class="btn btn-primary">Apply</button>
+                    </div>
+                    <div class="control-item" style="flex: 0 0 auto; align-self: flex-end;">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="futureSwitch">
+                            <label class="form-check-label" for="futureSwitch">Show future tides</label>
+                        </div>
+                    </div>
+                    <div class="control-item">
+                        <label class="form-label">Prediction:</label>
+                        <select id="predictionMode" class="form-select">
+                            <option value="simple">Simple (scipy)</option>
+                            <option value="utide">Advanced (UTide)</option>
+                        </select>
+                    </div>
                 </div>
                 <canvas id="past"></canvas>
                 <!-- <a href="enlarged.html">enlarge graph</a> -->
         </div>
         <div class="row mt-5">
             <div class="col" align="center">
-                <div class="events-controls mb-3 d-flex align-items-center" style="gap:12px; justify-content:center;">
-                    <label for="eventsStart" class="mb-0">Start:</label>
-                    <input type="date" id="eventsStart" class="form-control" style="max-width:160px;" />
-                    <label for="eventsEnd" class="mb-0">End:</label>
-                    <input type="date" id="eventsEnd" class="form-control" style="max-width:160px;" />
-                    <button id="eventsApply" class="btn btn-secondary">Apply</button>
-                    <div class="form-check form-switch ms-3">
-                        <input class="form-check-input" type="checkbox" id="events24Toggle" checked>
-                        <label class="form-check-label" for="events24Toggle">24-hour</label>
+                <div class="events-controls mb-3">
+                    <div class="control-item">
+                        <label for="eventsStart" class="form-label">Start:</label>
+                        <input type="date" id="eventsStart" class="form-control" />
+                    </div>
+                    <div class="control-item">
+                        <label for="eventsEnd" class="form-label">End:</label>
+                        <input type="date" id="eventsEnd" class="form-control" />
+                    </div>
+                    <div class="control-item" style="flex: 0 0 auto; align-self: flex-end;">
+                        <button id="eventsApply" class="btn btn-secondary">Apply</button>
+                    </div>
+                    <div class="control-item" style="flex: 0 0 auto; align-self: flex-end;">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="events24Toggle" checked>
+                            <label class="form-check-label" for="events24Toggle">24-hour</label>
+                        </div>
                     </div>
                 </div>
 
