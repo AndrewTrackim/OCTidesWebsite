@@ -6,13 +6,25 @@ var a, b, c, h, offset;
 var pastChart;
 var eventsForGraph = [];
 
-let futureSwitch = document.getElementById("futureSwitch");
+let futureSwitch = document.getElementById("futureSwitch") || document.getElementById("futureCheckbox");
 let startPicker = document.getElementById('startPicker');
 let endPicker = document.getElementById('endPicker');
 let applyRangeButton = document.getElementById('applyRangeButton');
 var currentEndUnix = null;
 let predictionMode = document.getElementById('predictionMode');
 var utidePoints = null;
+
+if (!futureSwitch) {
+    console.warn('generate_graph.js: no future switch checkbox found (tried futureSwitch and futureCheckbox)');
+}
+if (!startPicker || !endPicker || !applyRangeButton || !predictionMode) {
+    console.warn('generate_graph.js: one or more expected controls are missing', {
+        startPicker: !!startPicker,
+        endPicker: !!endPicker,
+        applyRangeButton: !!applyRangeButton,
+        predictionMode: !!predictionMode
+    });
+}
 
 function pad(n){ return n < 10 ? '0'+n : n }
 function unixToLocalDatetimeInput(unix) {
@@ -50,22 +62,28 @@ var defaultStart = parseInt(Date.now() / 1000) - 14400 - 43200;
 startPicker.value = unixToLocalDatetimeInput(defaultStart);
 endPicker.value = '';
 
-applyRangeButton.addEventListener('click', () => {
-    let startUnix = datetimeLocalToUnix(startPicker.value) || defaultStart;
-    let endUnix = datetimeLocalToUnix(endPicker.value);
-    loadData(startUnix, endUnix);
-});
-
-futureSwitch.addEventListener('change', () => {
-    // if enabling future and using UTide, reload to fetch UTide; otherwise just refresh
-    if (futureSwitch.checked && predictionMode.value === 'utide') {
-        let startUnix = datetimeLocalToUnix(startPicker.value) || defaultStart;
-        let endUnix = datetimeLocalToUnix(endPicker.value);
+if (applyRangeButton) {
+    applyRangeButton.addEventListener('click', () => {
+        let startUnix = datetimeLocalToUnix(startPicker ? startPicker.value : null) || defaultStart;
+        let endUnix = datetimeLocalToUnix(endPicker ? endPicker.value : null);
         loadData(startUnix, endUnix);
-    } else {
-        refreshGraph();
-    }
-});
+    });
+}
+
+if (futureSwitch) {
+    futureSwitch.addEventListener('change', () => {
+        // if enabling future and using UTide, reload to fetch UTide; otherwise refresh
+        if (futureSwitch.checked && predictionMode && predictionMode.value === 'utide') {
+            let startUnix = datetimeLocalToUnix(startPicker ? startPicker.value : null) || defaultStart;
+            let endUnix = datetimeLocalToUnix(endPicker ? endPicker.value : null);
+            loadData(startUnix, endUnix);
+        } else {
+            refreshGraph();
+        }
+    });
+} else {
+    console.warn('generate_graph.js: futureSwitch event binding skipped because checkbox is missing');
+}
 
 predictionMode.addEventListener('change', () => {
     // switching prediction mode likely requires fetching different prediction data
