@@ -265,9 +265,9 @@ function refreshGraph() {
                         label: 'Tide Events',
                         data: eventData,
                         type: 'scatter',
-                        pointRadius: 10,
-                        pointHoverRadius: 12,
-                        pointBorderWidth: 3,
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        pointBorderWidth: 2,
                         pointStyle: 'circle',
                         showLine: false,
                         backgroundColor: eventColors,
@@ -278,6 +278,24 @@ function refreshGraph() {
             },
 
             options:{
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            title: (items) => {
+                                if (!items || items.length === 0) return '';
+                                const item = items[0];
+                                const xValue = item.parsed && item.parsed.x != null ? item.parsed.x : item.raw && item.raw.x;
+                                const date = xValue ? new Date(xValue) : null;
+                                return date ? date.toLocaleString([], { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '';
+                            },
+                            label: (item) => {
+                                const yValue = item.parsed && item.parsed.y != null ? item.parsed.y : item.raw && item.raw.y;
+                                if (yValue == null) return '';
+                                return 'Depth: ' + Number(yValue).toFixed(2);
+                            }
+                        }
+                    }
+                },
                 scales: {
                     x: {
                         type: 'time',
