@@ -65,7 +65,20 @@
   padding-right: 20px;
 }
 
-    tr:nth-child(even) {background-color: #025bba; color: #eae7e4;}
+    table:not(#eventsTable) tr:nth-child(even) {background-color: #025bba; color: #eae7e4;}
+
+    /* Events table visuals: use mild striping, divider, and distinct future row */
+    #eventsTable { table-layout: fixed; width: 100%; }
+    #eventsTable thead th { border-bottom: 2px solid #025bba; }
+    #eventsTable tbody tr { border-top: 1px solid rgba(0,0,0,0.06); color: #012b5a; }
+    #eventsTable tbody tr:nth-child(odd) { background-color: #ffffff; }
+    #eventsTable tbody tr:nth-child(even) { background-color: #f2f7fb; }
+    #eventsTable tbody tr.future { background-color: #013a7a; color: #ffffff; }
+    #eventsTable tbody tr.future td { color: #ffffff; }
+    #eventsTable th:nth-child(1), #eventsTable td:nth-child(1) { width: 38%; }
+    #eventsTable th:nth-child(2), #eventsTable td:nth-child(2) { width: 18%; }
+    #eventsTable th:nth-child(3), #eventsTable td:nth-child(3) { width: 18%; }
+    #eventsTable th:nth-child(4), #eventsTable td:nth-child(4) { width: 26%; }
         
     </style>
 </head>
@@ -75,75 +88,55 @@
     </section>
     <div class="container">
         <div class="row mt-5">
-                <canvas id="past"></canvas>
-                <a href="enlarged.html">enlarge graph</a>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="futureCheckbox">
-                    <label class="form-check-label" for="futureCheckbox">
-                      Show future tides if available
-                    </label>
+                <div class="mb-3 d-flex align-items-center" style="gap:12px; flex-wrap:wrap;">
+                    <label for="startPicker" class="form-label mb-0">Start:</label>
+                    <input type="datetime-local" id="startPicker" class="form-control" style="max-width:260px;" />
+                    <label for="endPicker" class="form-label mb-0">End:</label>
+                    <input type="datetime-local" id="endPicker" class="form-control" style="max-width:260px;" />
+                    <button id="applyRangeButton" class="btn btn-primary">Apply</button>
+                    <div class="form-check form-switch ms-3">
+                        <input class="form-check-input" type="checkbox" id="futureSwitch">
+                        <label class="form-check-label" for="futureSwitch">Show future tides</label>
+                    </div>
+                    <label class="mb-0 ms-3">Prediction:</label>
+                    <select id="predictionMode" class="form-select" style="max-width:200px;">
+                        <option value="simple">Simple (scipy)</option>
+                        <option value="utide">Advanced (UTide)</option>
+                    </select>
                 </div>
+                <div class="mb-3 d-flex align-items-center" style="gap:10px; flex-wrap:wrap;">
+                <canvas id="past"></canvas>
+                </div>
+                <!-- <a href="enlarged.html">enlarge graph</a> -->
         </div>
         <div class="row mt-5">
             <div class="col" align="center">
-                <table>
-                    <tr>
-                        <th>Date</th>
-                        <th>Time</th>
-                        <th>Type</th>
-                    </tr>
-                    <tr>
-                      <td>6/14/22</td>
-                      <td>4:12 pm</td>
-                      <td>Low</td>
-                    </tr>
-                    <tr>
-                        <td>6/14/22</td>
-                        <td>10:52 pm</td>
-                        <td>High</td>
-                    </tr>
-                    <tr>
-                        <td>6/15/22</td>
-                        <td>5:16 am</td>
-                        <td>Low</td>
-                    </tr>
-                    <tr>
-                        <td>6/15/22</td>
-                        <td>1:21 pm</td>
-                        <td>High</td>
-                    </tr>
-                    <tr>
-                        <td>6/15/22</td>
-                        <td>8:18 pm</td>
-                        <td>Low</td>
-                    </tr>
-                    <tr>
-                        <td>6/16/22</td>
-                        <td>3:42 am</td>
-                        <td>High</td>
-                    </tr>
-                    <tr>
-                        <td>6/16/22</td>
-                        <td>10:30 am</td>
-                        <td>Low</td>
-                    </tr>
-                    <tr>
-                        <td>6/16/22</td>
-                        <td>4:20 pm</td>
-                        <td>High</td>
-                    </tr>
-                    <tr>
-                        <td>6/16/22</td>
-                        <td>10:19 pm</td>
-                        <td>Low</td>
-                    </tr>
-                  </table>
+                <div class="events-controls mb-3 d-flex align-items-center" style="gap:12px; justify-content:center;">
+                    <label for="eventsStart" class="mb-0">Start:</label>
+                    <input type="date" id="eventsStart" class="form-control" style="max-width:160px;" />
+                    <label for="eventsEnd" class="mb-0">End:</label>
+                    <input type="date" id="eventsEnd" class="form-control" style="max-width:160px;" />
+                    <button id="eventsApply" class="btn btn-secondary">Apply</button>
+                    <div class="form-check form-switch ms-3">
+                        <input class="form-check-input" type="checkbox" id="events24Toggle" checked>
+                        <label class="form-check-label" for="events24Toggle">24-hour</label>
+                    </div>
+                </div>
+
+                <table id="eventsTable" class="table table-sm" style="max-width:720px;">
+                    <thead>
+                        <tr>
+                            <th>Date / Time</th>
+                            <th>Type</th>
+                            <th>Depth</th>
+                            <th>Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody id="eventsTbody">
+                    </tbody>
+                </table>
             </div>
-            <div class="col" align="center">
-                <h1><b>70°/56°</b></h1>
-                <h1><b>NE 11mph</b></h1>
-                <h1><b>60% Humidity</b></h1>
-            </div>
+            <!-- Weather widget removed (placeholder data) -->
         </div>
     </div>
 
